@@ -1,12 +1,12 @@
 package be.vdab;
 public class Persoon {
-    public void steekMeerOver(Algoritme algoritme){
+    public void steekMeerOver(TransportMiddel transportmiddel){
         StringBuilder builder = new StringBuilder();
         builder.append("1. Inpakken\n");
         builder.append("2. ");
-        builder.append(algoritme.kiesTransportMiddel(this));
+        builder.append(transportmiddel.kiesTransportMiddel());
         builder.append("\n");
-        builder.append("3. inpakken");
+        builder.append("3. Uitpakken");
         System.out.println(builder.toString());
     }
 }

@@ -4,7 +4,6 @@ import java.util.Observable;
 
 public class Vulkaan extends Observable {
 
-    String naam;
     String[] mogelijkeActiviteiten = new String[]{"inactief", "actief"};
     int huidigeActiviteit;
 

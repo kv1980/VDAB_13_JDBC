@@ -9,4 +9,8 @@ public abstract class Inwoner implements Observer {
     public Inwoner(String naam) {
         this.naam = naam;
     }
+    
+    public void maakBevreesd(Vulkaan vulkaan){
+        vulkaan.addObserver(this);
+    }
 }

@@ -20,11 +20,10 @@ public class Main {
     public static void main(String[] args) {
         try (Connection connection = DriverManager.getConnection(URL,USER,PASSWORD);
                 Statement statement = connection.createStatement()){
-            statement.addBatch(UPDATE_BROUWER_2);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            connection.setAutoCommit(false);statement.addBatch(UPDATE_BROUWER_2);
             statement.addBatch(UPDATE_BROUWER_3);
             statement.addBatch(DELETE_BROUWER_1);
-            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-            connection.setAutoCommit(false);
             statement.executeBatch();
             connection.commit();
         } catch (SQLException ex){

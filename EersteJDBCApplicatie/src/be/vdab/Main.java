@@ -1,21 +1,40 @@
 package be.vdab;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Scanner;
 
 public class Main {
-    private static final String URL = "jdbc:mysql://localhost/tuincentrum?useSSL=false";
+
+    private static final String URL = "jdbc:mysql://localhost/tuincentrum?useSSL=false&noAccessToProcedureBodies=true";
     private static final String USER = "cursist";
-    private static final String PASSWORD = "VDABcursist2018";
-    private static final String UPDATE_PRIJS = "update planten set verkoopprijs = verkoopprijs * 1.1";
+    private static final String PASSWORD = "cursist";
+    private static final String CALL_PLANTEN_MET_EEN_WOORD =
+        "{call PlantenMetEenWoord(?)}";
+
     public static void main(String[] args) {
-        try(Connection connection = DriverManager.getConnection(URL,USER,PASSWORD);
-            Statement statement = connection.createStatement()){
-            System.out.println(statement.executeUpdate(UPDATE_PRIJS)); //ZO KORT MOGELIJK !!!!!!!
-        } catch (SQLException ex){
-            System.err.println("Connectie niet geopend.");
-        } 
+        try (Scanner sc = new Scanner(System.in)) {
+            System.out.print("Geef een woord op: ");
+            String woord = sc.nextLine();
+            try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                    CallableStatement statement = connection.prepareCall(CALL_PLANTEN_MET_EEN_WOORD)) {
+                statement.setString(1,'%'+woord+'%');
+                try (ResultSet resultSet = statement.executeQuery()){
+                    boolean erIsEenRecord=false; // test of er een record is, zonder result.next() uit te voeren!
+                    while (resultSet.next()){
+                        erIsEenRecord=true;
+                        System.out.println(resultSet.getString("naam"));
+                    }
+                    if (! erIsEenRecord) {
+                        System.out.println("niets gevonden");
+                    }
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
     }
 }

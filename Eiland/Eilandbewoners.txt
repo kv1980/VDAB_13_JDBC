@@ -1,5 +1,0 @@
-V,Pietje de Kanarie
-V,Ovide het Vogelbekdier
-Z,Bella de Koe
-Z,Knor het Varken
-V,Koko de Papegaai

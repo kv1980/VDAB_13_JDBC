@@ -1,8 +1,10 @@
 package be.vdab;
 
+import com.mysql.jdbc.Statement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashSet;
 import java.util.Scanner;
@@ -15,7 +17,7 @@ public class Main {
     private static final String PASSWORD = "cursist";
     
     private static final String INSERT_SOORT
-            = "insert into soort(naam) value (?)";
+            = "insert into soorten(naam) value (?)";
 
     public static void main(String[] args) {
         Set<String> soortnamen = new LinkedHashSet<>();
@@ -26,7 +28,7 @@ public class Main {
             }
         }
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                PreparedStatement statement = connection.prepareStatement(INSERT_SOORT)) {
+                PreparedStatement statement = connection.prepareStatement(INSERT_SOORT,Statement.RETURN_GENERATED_KEYS)) {
             connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             connection.setAutoCommit(false);
             for (String soortnaam : soortnamen) {
@@ -34,10 +36,15 @@ public class Main {
                 statement.addBatch();
             }
             int[] aantalToegevoegdeRecordsPerInsert = statement.executeBatch();
+            try (ResultSet resultSet = statement.getGeneratedKeys()){ //voorbeeld om AutoNumber id op te halen
+                while (resultSet.next()){
+                    System.out.println(resultSet.getLong(1));
+                }
+            }
             connection.commit();
             System.out.println(String.format("er werden %d records toegevoegd", aantalToegevoegdeRecordsPerInsert.length));
         } catch (SQLException ex) {
-            System.err.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 }

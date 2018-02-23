@@ -16,7 +16,7 @@ public class Main {
     private static final String INSERT_SOORT
             = "insert into soorten(naam) values ?";
 
-    public static void main(String[] args) {        
+    public static void main(String[] args) {
         Set<String> namen = new LinkedHashSet<>();
         try (Scanner scanner = new Scanner(System.in)) {
             System.out.println("Geef nieuwe soorten op tot je 'stop' ingeeft.");
@@ -26,15 +26,15 @@ public class Main {
         }
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
                 PreparedStatement statement = connection.prepareStatement(INSERT_SOORT)) {
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            connection.setAutoCommit(false);
             for (String naam : namen) {
-                statement.setString(1,naam);
+                statement.setString(1, naam);
                 statement.addBatch();
             }
-            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED); //voor addBatch of erna?
-            connection.setAutoCommit(false);
             int[] aantalToegevoegdeRecordsPerInsert = statement.executeBatch();
             connection.commit();
-            System.out.println(String.format("er werden %d records toegevoegd",aantalToegevoegdeRecordsPerInsert.length));
+            System.out.println(String.format("er werden %d records toegevoegd", aantalToegevoegdeRecordsPerInsert.length));
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
         }

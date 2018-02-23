@@ -13,23 +13,24 @@ public class Main {
     private static final String URL = "jdbc:mysql://localhost/tuincentrum?useSSL=false";
     private static final String USER = "cursist";
     private static final String PASSWORD = "cursist";
+    
     private static final String INSERT_SOORT
-            = "insert into soorten(naam) values ?";
+            = "insert into soort(naam) value (?)";
 
     public static void main(String[] args) {
-        Set<String> namen = new LinkedHashSet<>();
+        Set<String> soortnamen = new LinkedHashSet<>();
         try (Scanner scanner = new Scanner(System.in)) {
             System.out.println("Geef nieuwe soorten op tot je 'stop' ingeeft.");
-            for (String naam; !"stop".equalsIgnoreCase(naam = scanner.nextLine());) {
-                namen.add(naam);
+            for (String soortnaam; !"stop".equalsIgnoreCase(soortnaam = scanner.nextLine());) {
+                soortnamen.add(soortnaam);
             }
         }
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
                 PreparedStatement statement = connection.prepareStatement(INSERT_SOORT)) {
             connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             connection.setAutoCommit(false);
-            for (String naam : namen) {
-                statement.setString(1, naam);
+            for (String soortnaam : soortnamen) {
+                statement.setString(1, soortnaam);
                 statement.addBatch();
             }
             int[] aantalToegevoegdeRecordsPerInsert = statement.executeBatch();
